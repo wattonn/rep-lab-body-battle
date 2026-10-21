@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09090c">
+<title>REP//LAB — Body Battle</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#09090c;color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:18px 14px 35px}
+main{max-width:650px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #303038;padding-bottom:15px}
+.logo{font-size:21px;font-weight:1000;letter-spacing:2px}
+.logo span,h1 span{color:#ff303d}
+.tag{font-size:10px;color:#ffb4b8}
+h1{font-size:34px;line-height:1;margin:24px 0 8px}
+p{color:#aaaab5;font-size:13px;line-height:1.5}
+.card{background:#15151b;border:1px solid #303038;border-radius:16px;padding:15px;margin:12px 0}
+.kicker{font-size:10px;color:#ff505b;font-weight:900;letter-spacing:1.5px}
+.boss{background:linear-gradient(140deg,#38121a,#17141a);border-color:#70212c}
+.bosshead{display:flex;justify-content:space-between;align-items:center}
+.bossname{font-size:23px;font-weight:950;margin-top:5px}
+.bossicon{font-size:42px}
+.small{font-size:11px;color:#aaaab5}
+.row{display:flex;justify-content:space-between;font-size:11px;font-weight:800;margin-top:15px}
+.bar{height:9px;background:#343039;border-radius:9px;overflow:hidden;margin-top:6px}
+.bar div{height:100%;width:100%;background:#ff303d;transition:width .2s}
+.green{background:#4bd49b!important}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:#0c0c10;padding:11px;border-radius:10px}
+.num{font-size:25px;font-weight:950}
+.stat small{font-size:9px;color:#aaaab5}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+button{font:inherit;cursor:pointer}
+.exercise{padding:13px 8px;background:#17171e;color:white;border:1px solid #363640;border-radius:11px;font-weight:900;font-size:12px}
+.exercise.active{border-color:#ff303d;background:#35151b}
+.btn{padding:14px 10px;border:0;border-radius:11px;background:#ff303d;color:white;font-weight:950;font-size:12px}
+.btn.secondary{background:#292930;border:1px solid #404049}
+.btn.gold{background:#342819;color:#ffd277}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.camera{background:#050507;border-radius:12px;aspect-ratio:4/3;overflow:hidden;position:relative;display:grid;place-items:center;text-align:center;color:#999;font-size:12px}
+video{display:none;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.cameraLabel{position:absolute;top:8px;left:8px;background:#000b;padding:6px;border-radius:5px;font-size:10px}
+.section{font-size:13px;font-weight:950;letter-spacing:1px;margin:23px 0 10px}
+.log{background:#09090d;padding:12px;border:1px solid #303038;border-radius:10px;font-size:12px;line-height:1.5;margin-top:10px}
+.rewards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.reward{background:#15151b;padding:12px;border:1px solid #303038;border-radius:10px}
+.reward b{font-size:23px;display:block}
+.reward small{font-size:9px;color:#aaaab5}
+.quest{display:flex;justify-content:space-between;gap:8px;padding:12px 0;border-bottom:1px solid #303038;font-size:12px}
+.quest:last-child{border:0}
+.hint{font-size:11px;color:#aaaab5;line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+<header>
+ <div class="logo">REP<span>//</span>LAB</div>
+ <div class="tag">BODY BATTLE · RPG</div>
+</header>
+
+<h1>GANA CON<br><span>TU CUERPO.</span></h1>
+<p>Entrena en la vida real. Cada repetición es un ataque. Derrota a los jefes y conquista la campaña.</p>
+
+<section class="card">
+ <div class="row" style="margin-top:0"><span>RECLUTA · NIVEL <b id="level">1</b></span><span id="xpText">0 XP</span></div>
+ <div class="bar"><div id="xpBar" style="width:0%"></div></div>
+</section>
+
+<div class="section">⚔ JEFE ACTUAL</div>
+<section class="card boss">
+ <div class="bosshead">
+  <div><div class="kicker" id="zone">ZONA 01 / 05</div>
+   <div class="bossname" id="bossName">EL CENTINELA</div>
+   <p id="bossDesc">Tu voluntad es más débil que el hierro.</p>
+  </div>
+  <div class="bossicon" id="bossIcon">☠️</div>
+ </div>
+ <div class="row"><span>VIDA DEL JEFE</span><span><b id="hpText">100</b> HP</span></div>
+ <div class="bar"><div id="hpBar"></div></div>
+ <div class="row"><span>TU ENERGÍA</span><span><b id="playerText">100</b> HP</span></div>
+ <div class="bar"><div id="playerBar" class="green"></div></div>
+ <div class="stats">
+  <div class="stat"><div class="num" id="reps">0</div><small>REPETICIONES</small></div>
+  <div class="stat"><div class="num" id="damage">0</div><small>DAÑO</small></div>
+  <div class="stat"><div class="num" id="combo">x0</div><small>COMBO</small></div>
+ </div>
+</section>
+
+<div class="section">ELIGE TU ATAQUE</div>
+<div class="grid">
+ <button class="exercise active" data-ex="pushup">👊 FLEXIONES<br><small>12 de daño</small></button>
+ <button class="exercise" data-ex="squat">🦵 SENTADILLAS<br><small>16 de daño</small></button>
+ <button class="exercise" data-ex="situp">🔥 ABDOMINALES<br><small>10 de daño</small></button>
+ <button class="exercise" data-ex="pullup">🦍 DOMINADAS<br><small>22 de daño</small></button>
+</div>
+
+<div class="section">DETECCIÓN POR CÁMARA</div>
+<section class="card">
+ <div class="camera">
+  <video id="video" playsinline muted></video>
+  <div id="camPlaceholder">📷<br><br>CÁMARA DESACTIVADA<br><span class="hint">También puedes jugar sin cámara</span></div>
+  <div class="cameraLabel" id="camLabel">POSE SCAN · OFF</div>
+ </div>
+ <div class="actions">
+  <button class="btn" id="startCam">ACTIVAR CÁMARA</button>
+  <button class="btn secondary" id="stopCam" disabled>APAGAR</button>
+ </div>
+ <p class="hint" id="exerciseHint">Flexiones: ponte de lado y deja visibles hombro, codo y muñeca.</p>
+ <div class="actions">
+  <button class="btn gold" id="manual">+ REGISTRAR REP</button>
+  <button class="btn secondary" id="reset">REINICIAR BATALLA</button>
+ </div>
+ <div class="log" id="log">Sistema listo. Elige un ejercicio para comenzar.</div>
+</section>
+
+<div class="section">TUS RECOMPENSAS</div>
+<div class="rewards">
+ <div class="reward"><b id="coins">0</b><small>🪙 MONEDAS</small></div>
+ <div class="reward"><b id="wins">0</b><small>🏆 JEFES</small></div>
+ <div class="reward"><b id="total">0</b><small>💥 REPES TOTALES</small></div>
+</div>
+
+<div class="section">CAMPAÑA</div>
+<section class="card" id="campaign"></section>
+
+<div class="section">ÚLTIMAS VICTORIAS</div>
+<section class="card" id="history"><p>Aún no hay victorias. ¡Empieza tu historia!</p></section>
+
+<p class="hint">Prototipo personal. El progreso se guarda en Safari en este dispositivo. La cámara requiere HTTPS y conexión a internet para cargar el modelo. El reconocimiento es experimental; comprueba el conteo y prioriza una técnica segura.</p>
+</main>
+
+<script type="module">
+import { PoseLandmarker, FilesetResolver }
+ from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
+
+const $ = id => document.getElementById(id);
+
+const bosses = [
+ {name:"EL CENTINELA",icon:"☠️",hp:100,damage:12},
+ {name:"BESTIA DE ACERO",icon:"🐺",hp:160,damage:15},
+ {name:"EL VERDUGO",icon:"👹",hp:230,damage:18},
+ {name:"TITÁN CARMESÍ",icon:"🦾",hp:320,damage:20},
+ {name:"REY SIN CORONA",icon:"👑",hp:450,damage:25}
+];
+
+const moves = {
+ pushup:{name:"flexiones",damage:12,down:95,up:150,ids:[11,13,15],
+  hint:"Flexiones: de lado, mostrando hombro, codo y muñeca."},
+ squat:{name:"sentadillas",damage:16,down:110,up:155,ids:[23,25,27],
+  hint:"Sentadillas: de lado, mostrando cadera, rodilla y tobillo."},
+ situp:{name:"abdominales",damage:10,down:125,up:90,ids:[11,23,25],
+  hint:"Abdominales tipo crunch: de lado, mostrando hombro, cadera y rodilla."},
+ pullup:{name:"dominadas",damage:22,down:100,up:145,ids:[11,13,15],
+  hint:"Dominadas: de lado, mostrando hombro, codo y muñeca. Usa una barra segura."}
+};
+
+const initial = {
+ level:1,xp:0,coins:0,wins:0,total:0,
+ history:[]
+};
+
+let save;
+try { save={...initial,...JSON.parse(localStorage.getItem("bodybattle_save")||"{}")}; }
+catch { save={...initial}; }
+
+let stage=Math.min(save.wins,4);
+let exercise="pushup";
+let hp=bosses[stage].hp, playerHP=100, reps=0, damage=0, combo=0;
+let fighting=true, phase="up", stream=null, cameraOn=false, model=null, lastTime=-1;
+
+function persist(){
+ try {localStorage.setItem("bodybattle_save",JSON.stringify(save));}
+ catch(e){console.log("No se pudo guardar",e);}
+}
+
+function log(text){$("log").innerHTML=text;}
+
+function render(){
+ const b=bosses[stage];
+ $("zone").textContent=`ZONA ${String(stage+1).padStart(2,"0")} / 05`;
+ $("bossName").textContent=b.name;
+ $("bossIcon").textContent=b.icon;
+ $("hpText").textContent=Math.max(0,hp);
+ $("hpBar").style.width=Math.max(0,hp)/b.hp*100+"%";
+ $("playerText").textContent=playerHP;
+ $("playerBar").style.width=playerHP+"%";
+ $("reps").textContent=reps;
+ $("damage").textContent=damage;
+ $("combo").textContent="x"+combo;
+ $("level").textContent=save.level;
+ $("xpText").textContent=save.xp+" XP";
+ $("xpBar").style.width=Math.min(100,save.xp/(save.level*100)*100)+"%";
+ $("coins").textContent=save.coins;
+ $("wins").textContent=save.wins;
+ $("total").textContent=save.total;
+
+ $("campaign").innerHTML=bosses.map((x,i)=>`
+  <div class="quest">
+   <span>${i<save.wins?"✅":i===save.wins?"⚔️":"🔒"} ${x.name}</span>
+   <b>${i<save.wins?"DERROTADO":i===save.wins?"ACTIVO":"BLOQUEADO"}</b>
+  </div>`).join("");
+
+ $("history").innerHTML=save.history.length
+ ? save.history.slice(0,5).map(x=>`<div class="quest">
+ <span>🏆 ${x.name}<br><small>${x.reps} repeticiones · +${x.xp} XP</small></span>
+ <b>VICTORIA</b></div>`).join("")
+ : "<p>Aún no hay victorias. ¡Empieza tu historia!</p>";
+}
+
+function registerRep(){
+ if(!fighting){log("La batalla terminó. Pulsa reiniciar para volver a luchar.");return;}
+ reps++; save.total++; combo++;
+ const extra=combo>=5?4:0;
+ const hit=moves[exercise].damage+extra;
+ hp=Math.max(0,hp-hit); damage+=hit;
+ let message=`<b>¡IMPACTO!</b> ${moves[exercise].name.toUpperCase()}: -${hit} HP.`;
+
+ if(reps%5===0 && hp>0){
+  playerHP=Math.max(0,playerHP-bosses[stage].damage);
+  message+=` El jefe contraataca: -${bosses[stage].damage} HP.`;
+  combo=0;
+ }
+ render();
+
+ if(hp<=0){winBoss();return;}
+ if(playerHP<=0){
+  fighting=false;
+  message+=" <b>DERROTA.</b> Reinicia para volver a intentarlo.";
+ }
+ log(message);
+ persist();
+}
+
+function winBoss(){
+ fighting=false;
+ const b=bosses[stage], gainedXP=80+stage*40, gainedCoins=50+stage*25;
+ save.wins=Math.max(save.wins,stage+1);
+ save.coins+=gainedCoins;
+ save.xp+=gainedXP;
+ save.history.unshift({name:b.name,reps,xp:gainedXP,date:Date.now()});
+
+ while(save.xp>=save.level*100){
+  save.xp-=save.level*100;
+  save.level++;
+ }
+ persist();render();
+
+ if(stage<4){
+  log(`<b>¡JEFE DERROTADO!</b> ${b.name}. +${gainedXP} XP y +${gainedCoins} monedas. Pulsa “Siguiente jefe” para continuar.`);
+  $("manual").textContent="SIGUIENTE JEFE";
+ }else{
+  log("<b>¡CAMPAÑA COMPLETADA!</b> Has derrotado a todos los jefes. ¡Leyenda de REP//LAB!");
+  $("manual").textContent="REINICIAR CAMPAÑA";
+ }
+}
+
+function resetFight(next=false){
+ if(next){
+  if(stage<4)stage++;
+  else stage=0;
+ }
+ hp=bosses[stage].hp;playerHP=100;reps=0;damage=0;combo=0;
+ fighting=true;phase="up";
+ $("manual").textContent="+ REGISTRAR REP";
+ log("Nueva batalla iniciada. ¡A por el jefe!");
+ render();
+}
+
+$("manual").addEventListener("click",()=>{
+ if(!fighting){
+  if(hp<=0)resetFight(true);
+  else resetFight(false);
+ }else registerRep();
+});
+
+$("reset").addEventListener("click",()=>resetFight(false));
+
+document.querySelectorAll(".exercise").forEach(button=>{
+ button.addEventListener("click",()=>{
+  exercise=button.dataset.ex;
+  document.querySelectorAll(".exercise").forEach(x=>x.classList.toggle("active",x===button));
+  $("exerciseHint").textContent=moves[exercise].hint;
+  phase="up";
+ });
+});
+
+function getAngle(a,b,c){
+ const r=Math.atan2(c.y-b.y,c.x-b.x)-Math.atan2(a.y-b.y,a.x-b.x);
+ let d=Math.abs(r*180/Math.PI);
+ return d>180?360-d:d;
+}
+
+function processPose(result){
+ const p=result.landmarks?.[0];
+ if(!p)return;
+ const m=moves[exercise];
+ if(!m.ids.every(i=>p[i]&&(p[i].visibility??1)>.35))return;
+ const [a,b,c]=m.ids.map(i=>p[i]);
+ const angle=getAngle(a,b,c);
+ $("camLabel").textContent="POSE SCAN · "+Math.round(angle)+"°";
+
+ if(angle<m.down)phase="down";
+ if(angle>m.up&&phase==="down"){
+  phase="up";
+  registerRep();
+ }
+}
+
+async function cameraLoop(){
+ if(!cameraOn)return;
+ const video=$("video");
+ if(video.readyState>=2&&video.currentTime!==lastTime){
+  lastTime=video.currentTime;
+  try{processPose(model.detectForVideo(video,performance.now()));}catch(e){}
+ }
+ requestAnimationFrame(cameraLoop);
+}
+
+async function startCamera(){
+ try{
+  $("startCam").disabled=true;
+  if(!navigator.mediaDevices?.getUserMedia)
+   throw new Error("Abre esta página mediante HTTPS en Safari.");
+
+  if(!stream){
+   stream=await navigator.mediaDevices.getUserMedia({
+    audio:false,video:{facingMode:"user",width:{ideal:640},height:{ideal:480}}
+   });
+   $("video").srcObject=stream;
+   await $("video").play();
+   $("video").style.display="block";
+   $("camPlaceholder").style.display="none";
+  }
+
+  if(!model){
+   log("Cargando el modelo de reconocimiento corporal…");
+   const vision=await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+   );
+   model=await PoseLandmarker.createFromOptions(vision,{
+    baseOptions:{
+     modelAssetPath:"https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task"
+    },
+    runningMode:"VIDEO",numPoses:1,
+    minPoseDetectionConfidence:.55,
+    minPosePresenceConfidence:.5,
+    minTrackingConfidence:.5
+   });
+  }
+
+  cameraOn=true;
+  $("startCam").textContent="CÁMARA ACTIVA";
+  $("startCam").disabled=false;
+  $("stopCam").disabled=false;
+  $("camLabel").textContent="POSE SCAN · ON";
+  log("Cámara activa. Ponte de lado y prueba el movimiento.");
+  cameraLoop();
+ }catch(e){
+  console.error(e);
+  $("startCam").disabled=false;
+  log("No se pudo iniciar la cámara. Comprueba HTTPS, permisos y conexión. "+e.message);
+ }
+}
+
+function stopCamera(){
+ cameraOn=false;
+ if(stream)stream.getTracks().forEach(t=>t.stop());
+ stream=null;
+ $("video").srcObject=null;
+ $("video").style.display="none";
+ $("camPlaceholder").style.display="block";
+ $("startCam").disabled=false;
+ $("startCam").textContent="ACTIVAR CÁMARA";
+ $("stopCam").disabled=true;
+ $("camLabel").textContent="POSE SCAN · OFF";
+}
+
+$("startCam").addEventListener("click",startCamera);
+$("stopCam").addEventListener("click",stopCamera);
+window.addEventListener("pagehide",()=>{if(stream)stream.getTracks().forEach(t=>t.stop());});
+
+render();
+</script>
+</body>
+</html>
